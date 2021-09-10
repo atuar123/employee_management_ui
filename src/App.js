@@ -3,13 +3,14 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css'
 import HeaderComponent from './components/layout/HeaderComponent';
 import FooterComponent from './components/layout/FooterComponent';
+import ListEmployee from './components/employee/ListEmployee';
 
 function App() {
   return (
     <div>
       <HeaderComponent/>
       <div className="container">
-          <h2>Employee Management App</h2>
+         <ListEmployee/>
       </div>
       <FooterComponent/>
     </div>
