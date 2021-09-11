@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
+import EmployeeService from '../../services/EmployeeService';
 
 class CreateEmployee extends Component {
     constructor(props) {
         super(props);
 
         this.state={
-            id: this.props.match.params.id || "",
+            id: this.props.match.params.id,
             name:"",
             designation:"",
             email:"",
@@ -18,11 +19,51 @@ class CreateEmployee extends Component {
     }
 
     componentDidMount() {
+        console.log(this.state.id);
+        if (this.state.id) {
+            this.setState({
+                pagetitle: "Edit Employee Info"
+              })
+              EmployeeService.getEmployeeById(this.state.id).then((res) => {
+                let employee = res.data;
+                console.log(employee);
+                this.setState({
+                  name: employee.name,
+                  designation: employee.designation,
+                  email: employee.email,
+                  contactNo: employee.contactNo
+                });
+              });
+           
+          } else {
+            this.setState({
+                pagetitle: "Add Employee"
+              })
+              return
+          }
 
     }
 
     submitHandler = (event) => {
         event.preventDefault();
+        const dataBody = {
+            id: this.state.id,
+            name: this.state.name,
+            designation: this.state.designation,
+            email: this.state.email,
+            contactNo: this.state.contactNo
+        };
+        
+        if(this.state.id){
+            EmployeeService.updateEmployee(this.state.id, dataBody).then( res => {
+                this.props.history.push('/employees');
+            });
+        }else{
+            EmployeeService.createEmployee(dataBody).then(res =>{
+                this.props.history.push('/employees');
+            });
+        }
+
     }
 
     changeHandler = (event) => {
@@ -33,11 +74,12 @@ class CreateEmployee extends Component {
         this.props.history.push("/employees");
     }
     render() {
+        const {pagetitle}= this.state;
         return (
             <div className="container">
-                <div className="row text-center"><h2>Add Employee</h2></div>
-        <div className="col-6">
-                <form className="form" onSubmit={this.submitHandler}>
+               <h2 className="text-center p-1 font-weight-bold" style={{ fontSize: "22px" }}>{pagetitle}</h2>
+                        <div className="col-10">
+                            <form className="form" onSubmit={this.submitHandler}>
                                 <div className="row">
                                     <label className="col-4 text-right">Name</label>
                                     <div className="col-8 form-group">
@@ -84,7 +126,7 @@ class CreateEmployee extends Component {
                                 {this.state.id && <span>Update</span>}{!this.state.id && <span>Save</span>}
                             </button>
                     </form>
-                    </div>
+                </div>
             </div>
         );
     }
